@@ -15,7 +15,7 @@ using Range = JSLSApp.LspTypes.Range;
 //}
 //
 //";
-//var str = File.ReadAllText("C:\\Users\\hunte\\Repos\\New folder (3)\\Text\\src\\main.cjs");
+//var str = File.ReadAllText("C:\\Users\\hunte\\Repos\\New folder (4)\\arbezemilnomel\\src\\main.cjs");
 //var javaScriptDocument = new JavaScriptDocument(str.ToList());
 //var javaScriptParser = new JavaScriptParser(javaScriptDocument);
 //javaScriptDocument.CompilationUnit = javaScriptParser.Parse();

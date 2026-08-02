@@ -379,7 +379,6 @@ public class JavaScriptParser
     public SyntaxToken Lex_String(char terminator)
     {
         _seenLineEnd_flagForStringsAndComments = false;
-        _seenLineEnd_seenLineEnd_flagForStringsAndComments_StartPosition = _pos;
 
         var startPosition = new Position(_indexLine, _indexChar);
         var length = 1;
@@ -509,7 +508,6 @@ public class JavaScriptParser
     public SyntaxToken Lex_MultiLineComment()
     {
         _seenLineEnd_flagForStringsAndComments = false;
-        _seenLineEnd_seenLineEnd_flagForStringsAndComments_StartPosition = _pos;
 
         var startPosition = new Position(_indexLine, _indexChar);
         var length = 2;
