@@ -51,6 +51,11 @@ public abstract class SyntaxNode
 
         sb.Append(indentationString); sb.Append("\"type\": "); sb.Append($"{SyntaxKind},\n");
         sb.Append(indentationString); sb.Append("\"id\": { "); sb.Append("\"type\": "); sb.Append($"\"{Id_type}\", "); sb.Append("\"name\": "); sb.Append($"\"{Id_name}\" }},\n");
+        
+        
+        sb.Append(indentationString); sb.Append("\"start\": { "); sb.Append("\"line\": "); sb.Append($"{Start.line}, "); sb.Append("\"column\": "); sb.Append($"{Start.character} }},\n");
+        sb.Append(indentationString); sb.Append("\"end\": { "); sb.Append("\"line\": "); sb.Append($"{End.line}, "); sb.Append("\"column\": "); sb.Append($"{End.character} }},\n");
+
 
         indentationCount--;
         indentationString = new string(' ', indentationCount);
@@ -60,9 +65,11 @@ public abstract class SyntaxNode
 
 public class ClassDeclarationNode : SyntaxNode
 {
-    public ClassDeclarationNode(string id_name)
+    public ClassDeclarationNode(string id_name, int startLine, int startCharacter, int endLine, int endCharacter)
     {
         Id_name = id_name;
+        Start = new Position(startLine, startCharacter);
+        End = new Position(endLine, endCharacter);
     }
 
     public override SyntaxKind SyntaxKind => SyntaxKind.ClassDeclarationNode;

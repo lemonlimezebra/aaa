@@ -110,7 +110,7 @@ public class JavaScriptParser
                         {
                             stringBuilder.Append(_doc.Chars[(_pos - token.Length) + k]);
                         }
-                        var classDeclarationNode = new ClassDeclarationNode(stringBuilder.ToString());
+                        var classDeclarationNode = new ClassDeclarationNode(stringBuilder.ToString(), token.Position.line, token.Position.character, _indexLine, _indexChar);
                         _bodyList.Add(classDeclarationNode);
                         context = Context.None;
                     }

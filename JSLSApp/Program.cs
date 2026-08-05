@@ -27,6 +27,8 @@ var bbb = javaScriptDocument.CompilationUnit.GetString();
   {
    "type": ClassDeclarationNode,
    "id": { "type": "Identifier", "name": "Foo" },
+   "start": { "line": 1, "column": 13 },
+   "end": { "line": 1, "column": 16 },
   },
  ],
 }
