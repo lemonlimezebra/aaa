@@ -520,7 +520,28 @@ object? DeserializeContent(string content)
                     };
                 }
 
-                var textDocumentHoverResponse = new TextDocumentHoverResponse(hoverRequest.id, $"tooltip example for ({hoverRequest.@params.position.line}, {hoverRequest.@params.position.character}) {hoverRequest.@params.textDocument.uri}");
+                SyntaxNode? result_node = null;
+
+                foreach (var child_node in bbbjavaScriptDocument.CompilationUnit.BodyList)
+                {
+                    if (child_node.Start.line == hoverRequest.@params.position.line)
+                    {
+                        result_node = child_node;
+                        break;
+                    }
+                }
+
+                string nodeString;
+                if (result_node is not null)
+                {
+                    nodeString = $"{result_node.SyntaxKind}~{result_node.Id_name}";
+                }
+                else
+                {
+                    nodeString = "result_node~was_null";
+                }
+
+                var textDocumentHoverResponse = new TextDocumentHoverResponse(hoverRequest.id, $"tooltip example for ({nodeString}) ({hoverRequest.@params.position.line}, {hoverRequest.@params.position.character}) {hoverRequest.@params.textDocument.uri}");
                 Console.Out.WriteLine(MAIN_encodeMessageObject(textDocumentHoverResponse));
             }
 
