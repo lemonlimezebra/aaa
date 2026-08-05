@@ -24,9 +24,9 @@ var bbb = javaScriptDocument.CompilationUnit.GetString();
 {
  "type": "Program"
  "body": [
-
+  ]
 }
- */
+*/
 
 var stdoutChunkObjects = new List<StdoutChunkObject>();
 var stdoutChunkFirstEntryMetadataSubstringIndexStart = 0;
