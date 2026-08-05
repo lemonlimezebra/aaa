@@ -640,6 +640,45 @@ Google AI:
 <   "sourceType": "script"
 < }
 < ...
+< If you were parsing this file using your iterative development strategy on Day 1, your AST might look like a heavily simplified, fallback version of this tree.
+< {
+<   "type": "ClassDeclaration",
+<   "id": { "type": "Identifier", "name": "Foo" },
+<   "body": {
+<     "type": "ClassBody",
+<     "body": [
+<       {
+<         "type": "UnregisteredNode",
+<         "tokens": ['Bar', '(', ')', '{', 'console', '.', 'log', ...],
+<         "start": { "line": 2, "column": 1 },
+<         "end": { "line": 4, "column": 2 }
+<       }
+<     ]
+<   }
+< }
 
+I think the steps are:
+
+```js
+// hover here nothing
+public class Foo { // hover here see class definition 'Foo'
+}
+// hover here nothing
+```
+
+
+----------------------
+Then:
+
+
+```js
+// nothing...
+public class Foo { // hover here see class definition 'Foo'
+}
+// nothing
+public class Bar { // hover here see class definition 'Bar'
+}
+// nothing
+```
  
  */
