@@ -22,13 +22,13 @@ var bbb = javaScriptDocument.CompilationUnit.GetString();
 
 /*
 {
- "type": "Program"
+ "type": "Program",
  "body": [
   {
-   "type": ClassDeclarationNode
-   "id": { "type": "Identifier", "name": "Foo"
-{
-   ]
+   "type": ClassDeclarationNode,
+   "id": { "type": "Identifier", "name": "Foo" },
+  },
+ ],
 }
 */
 

@@ -49,10 +49,12 @@ public abstract class SyntaxNode
         indentationCount++;
         indentationString = new string(' ', indentationCount);
 
-        sb.Append(indentationString); sb.Append("\"type\": "); sb.Append($"{SyntaxKind}\n");
-        sb.Append(indentationString); sb.Append("\"id\": { "); sb.Append("\"type\": "); sb.Append($"\"{Id_type}\", "); sb.Append("\"name\": "); sb.Append($"\"{Id_name}\"\n");
+        sb.Append(indentationString); sb.Append("\"type\": "); sb.Append($"{SyntaxKind},\n");
+        sb.Append(indentationString); sb.Append("\"id\": { "); sb.Append("\"type\": "); sb.Append($"\"{Id_type}\", "); sb.Append("\"name\": "); sb.Append($"\"{Id_name}\" }},\n");
 
-        sb.Append("{\n");
+        indentationCount--;
+        indentationString = new string(' ', indentationCount);
+        sb.Append(indentationString); sb.Append("},\n");
     }
 }
 

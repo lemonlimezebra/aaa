@@ -30,7 +30,7 @@ public class JavaScriptCompilationUnit
         indentationCount++;
         indentationString = new string(' ', indentationCount);
 
-        sb.Append(indentationString); sb.Append("\"type\": "); sb.Append("\"Program\"\n");
+        sb.Append(indentationString); sb.Append("\"type\": "); sb.Append("\"Program\",\n");
         sb.Append(indentationString); sb.Append("\"body\": "); sb.Append("[\n");
         indentationCount++;
         indentationString = new string(' ', indentationCount);
@@ -38,12 +38,13 @@ public class JavaScriptCompilationUnit
         {
             node.AppendString(sb, ref indentationCount, ref indentationString);
         }
-        sb.Append(indentationString); sb.Append("]\n");
         indentationCount--;
         indentationString = new string(' ', indentationCount);
+        sb.Append(indentationString); sb.Append("],\n");
 
-
-        sb.Append("}");
+        indentationCount--;
+        indentationString = new string(' ', indentationCount);
+        sb.Append(indentationString); sb.Append("}");
 
         return sb.ToString();
     }
