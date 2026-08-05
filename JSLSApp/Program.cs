@@ -474,6 +474,45 @@ object? DeserializeContent(string content)
             }
 
             return request;
+        case "textDocument/hover":
+            var hoverRequest = JsonSerializer.Deserialize<TextDocumentHoverRequest>(content);
+            File.AppendAllText(myPath, $"\n====RECEIVED HOVER {hoverRequest.@params.textDocument.uri}====\n");
+            File.AppendAllText(myPath, $"\n====TEEEEEEEEEEEST====\n");
+
+            if (_javaScriptWorkspace?.OpenedSourceFileAbsolutePathToInMemoryContentMap.TryGetValue(hoverRequest.@params.textDocument.uri, out var bbbjavaScriptDocument) ?? false)
+            {
+                File.AppendAllText(myPath, $"\n====v2TEEEEEEEEEEEST====\n");
+
+                var javascriptParser = new JavaScriptParser(bbbjavaScriptDocument);
+                bbbjavaScriptDocument.CompilationUnit = javascriptParser.Parse();
+                //if (!bbbjavaScriptDocument.HasBeenParsedAtLeastOnce)
+                //{
+                //    var javascriptParser = new JavaScriptParser();
+                //    bbbjavaScriptDocument.CompilationUnit = javascriptParser.Parse(bbbjavaScriptDocument);
+                //}
+                var documentSymbolArray = new DocumentSymbol[bbbjavaScriptDocument.CompilationUnit.FunctionDefinitionStartPositionList.Count];
+                File.AppendAllText(myPath, $"\n====documentSymbolList.length:{documentSymbolArray.Length}====\n");
+                for (int i = 0; i < bbbjavaScriptDocument.CompilationUnit.FunctionDefinitionStartPositionList.Count; i++)
+                {
+                    var functionDefinition = bbbjavaScriptDocument.CompilationUnit.FunctionDefinitionStartPositionList[i];
+                    documentSymbolArray[i] = new DocumentSymbol
+                    {
+                        //name
+                        kind = SymbolKind.Function,
+                        name = functionDefinition.Name,
+                        range = new Range
+                        {
+                            start = functionDefinition.StartPosition,
+                            end = functionDefinition.StartPosition
+                        }
+                    };
+                }
+
+                var textDocumentHoverResponse = new TextDocumentHoverResponse(hoverRequest.id, $"tooltip example for {hoverRequest.@params.textDocument.uri}");
+                Console.Out.WriteLine(MAIN_encodeMessageObject(textDocumentHoverResponse));
+            }
+
+            return request;
         case "textDocument/CustomFullFileLexRequest":
             var customFullFileLexRequest = JsonSerializer.Deserialize<CustomFullFileLexRequest>(content);
             File.AppendAllText(myPath, $"\n====RECEIVED customFullFileLexRequest {customFullFileLexRequest.@params.textDocument.uri}====\n");
