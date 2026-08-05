@@ -4,10 +4,10 @@ namespace JSLSApp;
 
 public class JavaScriptCompilationUnit
 {
-    public JavaScriptCompilationUnit(List<FunctionDefinitionSyntax> functionDefinitionStartPositionList)
+    public JavaScriptCompilationUnit(List<FunctionDefinitionSyntax> functionDefinitionStartPositionList, List<SyntaxNode> bodyList)
     {
         FunctionDefinitionStartPositionList = functionDefinitionStartPositionList;
-        BodyList = new();
+        BodyList = bodyList;
     }
 
     // TODO: This isn't optimal (and is incorrect given the lack of contextual information) but I want to get a "proof of concept"...

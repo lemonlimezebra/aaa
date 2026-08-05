@@ -8,8 +8,8 @@ namespace JSLSApp;
 public abstract class SyntaxNode
 {
     public abstract SyntaxKind SyntaxKind { get; }
-    public Position Start { get; set; }
-    public Position End { get; set; }
+    public abstract Position Start { get; set; }
+    public abstract Position End { get; set; }
 
     /// <summary>
     /// I'm being a bit awkward with how strictly I'm following the example
@@ -19,8 +19,8 @@ public abstract class SyntaxNode
     /// Based on the JSON it seems every node has a list of children... or maybe the body.
     /// But maybe this is all a shared list or etc... I have no idea.
     /// </summary>
-    public IdKind Id_type { get; set; }
-    public string Id_name { get; set; }
+    public abstract IdKind Id_type { get; }
+    public abstract string Id_name { get; }
     public Body? Body { get; set; }
     /*
     < {
@@ -39,7 +39,7 @@ public abstract class SyntaxNode
 <   }
 < }*/
 
-    public void AppendString(StringBuilder sb, ref int indentationCount, ref string indentationString)
+    public virtual void AppendString(StringBuilder sb, ref int indentationCount, ref string indentationString)
     {
         /*
          * anxiety/procrastination: I need to just start doing something I REALLY do NOT like how this reads it is just terrible lol
@@ -58,7 +58,17 @@ public abstract class SyntaxNode
 
 public class ClassDeclarationNode : SyntaxNode
 {
+    public ClassDeclarationNode(string id_name)
+    {
+        Id_name = id_name;
+    }
+
     public override SyntaxKind SyntaxKind => SyntaxKind.ClassDeclarationNode;
+
+    public override Position Start { get; set; }
+    public override Position End { get; set; }
+    public override IdKind Id_type => IdKind.Identifier;
+    public override string Id_name { get; }
 }
 
 public enum IdKind

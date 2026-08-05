@@ -23,7 +23,8 @@ public class JavaScriptParser
 
     public List<int> PsuedoFourFieldTrackedSyntaxList { get => _psuedoFourFieldTrackedSyntaxList; set => _psuedoFourFieldTrackedSyntaxList = value; }
 
-    private List<FunctionDefinitionSyntax> _functionDefinitionStartPositionList = new List<FunctionDefinitionSyntax>();
+    private List<FunctionDefinitionSyntax> _functionDefinitionStartPositionList = new();
+    private List<SyntaxNode> _bodyList = new();
     /// <summary>
     /// TODO: Don't store this, presumably only the editor client needs this information, and it would be done once upon opening a file.
     /// 
@@ -44,6 +45,7 @@ public class JavaScriptParser
     {
         None,
         ExpectFunctionDefinition,
+        ExpectClassDefinition,
     }
 
     public JavaScriptCompilationUnit Parse()
@@ -84,7 +86,7 @@ public class JavaScriptParser
 < }
                      
                      */
-                    context = Context.ExpectFunctionDefinition;
+                    context = Context.ExpectClassDefinition;
                     break;
                 case SyntaxKind.IdentifierToken:
                     if (context == Context.ExpectFunctionDefinition)
@@ -97,6 +99,19 @@ public class JavaScriptParser
                             stringBuilder.Append(_doc.Chars[(_pos - token.Length) + k]);
                         }
                         _functionDefinitionStartPositionList[^1].Name = stringBuilder.ToString();
+                        context = Context.None;
+                    }
+                    else if (context == Context.ExpectClassDefinition)
+                    {
+                        // TODO: Constructing a string here is likely to be extremely GC expensive
+                        // TODO: Presuming that the entry was added then just taking the most recent function definition perhaps is a bit hacky; I'm not sure
+                        stringBuilder.Clear();
+                        for (int k = 0; k < token.Length; k++)
+                        {
+                            stringBuilder.Append(_doc.Chars[(_pos - token.Length) + k]);
+                        }
+                        var classDeclarationNode = new ClassDeclarationNode(stringBuilder.ToString());
+                        _bodyList.Add(classDeclarationNode);
                         context = Context.None;
                     }
                     break;
@@ -126,7 +141,7 @@ public class JavaScriptParser
         }
 
         exitOuterWhileLoop:
-        return new JavaScriptCompilationUnit(_functionDefinitionStartPositionList);
+        return new JavaScriptCompilationUnit(_functionDefinitionStartPositionList, _bodyList);
     }
 
     public SyntaxToken Lex()
@@ -290,6 +305,18 @@ public class JavaScriptParser
                 {
                     _functionDefinitionStartPositionList.Add(new FunctionDefinitionSyntax(startPosition));
                     syntaxKind = SyntaxKind.FunctionKeywordToken;
+                }
+                break;
+            case 534:
+                if (length == 5 &&
+                    _doc.Chars[_pos - 5] == 99  /* 'c' */ &&
+                    _doc.Chars[_pos - 4] == 108 /* 'l' */ &&
+                    _doc.Chars[_pos - 3] == 97  /* 'a' */ &&
+                    _doc.Chars[_pos - 2] == 115  /* 's' */ &&
+                    _doc.Chars[_pos - 1] == 115 /* 's' */)
+                {
+                    //_functionDefinitionStartPositionList.Add(new FunctionDefinitionSyntax(startPosition));
+                    syntaxKind = SyntaxKind.ClassKeywordToken;
                 }
                 break;
         }
