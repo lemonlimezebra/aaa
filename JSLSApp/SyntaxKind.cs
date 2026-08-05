@@ -7,8 +7,11 @@ public enum SyntaxKind
     NumberToken,
     EndOfFileToken,
     FunctionKeywordToken,
+    ClassKeywordToken,
     WhitespaceToken,
     StringToken,
     SingleLineCommentToken,
     MultiLineCommentToken,
+    ClassDeclarationNode,
+    GlobalNode,
 }

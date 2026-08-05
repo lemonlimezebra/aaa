@@ -64,6 +64,28 @@ public class JavaScriptParser
                 case SyntaxKind.FunctionKeywordToken:
                     context = Context.ExpectFunctionDefinition;
                     break;
+                case SyntaxKind.ClassKeywordToken:
+                    /*
+                     < If you were parsing this file using your iterative development strategy on Day 1, your AST might look like a heavily simplified, fallback version of this tree.
+< {
+<   "type": "ClassDeclaration",
+<   "id": { "type": "Identifier", "name": "Foo" },
+<   "body": {
+<     "type": "ClassBody",
+<     "body": [
+<       {
+<         "type": "UnregisteredNode",
+<         "tokens": ['Bar', '(', ')', '{', 'console', '.', 'log', ...],
+<         "start": { "line": 2, "column": 1 },
+<         "end": { "line": 4, "column": 2 }
+<       }
+<     ]
+<   }
+< }
+                     
+                     */
+                    context = Context.ExpectFunctionDefinition;
+                    break;
                 case SyntaxKind.IdentifierToken:
                     if (context == Context.ExpectFunctionDefinition)
                     {

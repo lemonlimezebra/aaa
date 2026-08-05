@@ -9,18 +9,24 @@ using System.Text.Json;
 using Range = JSLSApp.LspTypes.Range;
 
 
-//var str = @"1Apple Apple2 Apple AppleFruit FruitApple __Apple AppleApple
-//
-//function Aaa() {
-//}
-//
-//";
+var str = @"
+public class Foo {
+}
+";
 //var str = File.ReadAllText("C:\\Users\\hunte\\Repos\\New folder (4)\\arbezemilnomel\\src\\main.cjs");
-//var javaScriptDocument = new JavaScriptDocument(str.ToList());
-//var javaScriptParser = new JavaScriptParser(javaScriptDocument);
-//javaScriptDocument.CompilationUnit = javaScriptParser.Parse();
-//var aaa = javaScriptDocument.CompilationUnit.FunctionDefinitionStartPositionList;
+var javaScriptDocument = new JavaScriptDocument(str.ToList());
+var javaScriptParser = new JavaScriptParser(javaScriptDocument);
+javaScriptDocument.CompilationUnit = javaScriptParser.Parse();
+var aaa = javaScriptDocument.CompilationUnit.FunctionDefinitionStartPositionList;
+var bbb = javaScriptDocument.CompilationUnit.GetString();
 
+/*
+{
+ "type": "Program"
+ "body": [
+
+}
+ */
 
 var stdoutChunkObjects = new List<StdoutChunkObject>();
 var stdoutChunkFirstEntryMetadataSubstringIndexStart = 0;
@@ -672,7 +678,7 @@ Then:
 
 
 ```js
-// nothing...
+// nothing
 public class Foo { // hover here see class definition 'Foo'
 }
 // nothing
