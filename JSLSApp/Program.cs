@@ -520,7 +520,7 @@ object? DeserializeContent(string content)
                     };
                 }
 
-                var textDocumentHoverResponse = new TextDocumentHoverResponse(hoverRequest.id, $"tooltip example for {hoverRequest.@params.textDocument.uri}");
+                var textDocumentHoverResponse = new TextDocumentHoverResponse(hoverRequest.id, $"tooltip example for ({hoverRequest.@params.position.line}, {hoverRequest.@params.position.character}) {hoverRequest.@params.textDocument.uri}");
                 Console.Out.WriteLine(MAIN_encodeMessageObject(textDocumentHoverResponse));
             }
 
