@@ -559,6 +559,8 @@ object? DeserializeContent(string content)
 
 
 /*
+
+Google AI:
  
 > Given the following JavaScript:
 > 
@@ -572,6 +574,8 @@ object? DeserializeContent(string content)
 > 
 > What would the abstract syntax tree look like?
 
+< For standard JavaScript parsers (like Babel or Acorn), this code generates an abstract syntax tree composed of nodes that represent the structural hierarchy of the class.
+< ...
 < {
 <   "type": "Program",
 <   "body": [
@@ -635,7 +639,7 @@ object? DeserializeContent(string content)
 <   ],
 <   "sourceType": "script"
 < }
-
+< ...
 
  
  */
