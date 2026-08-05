@@ -558,4 +558,84 @@ object? DeserializeContent(string content)
 }
 
 
+/*
+ 
+> Given the following JavaScript:
+> 
+> ```js
+> class Foo {
+> 	Bar() {
+> 		console.log('hello world');
+> 	}
+> }
+> ```
+> 
+> What would the abstract syntax tree look like?
 
+< {
+<   "type": "Program",
+<   "body": [
+<     {
+<       "type": "ClassDeclaration",
+<       "id": {
+<         "type": "Identifier",
+<         "name": "Foo"
+<       },
+<       "superClass": null,
+<       "body": {
+<         "type": "ClassBody",
+<         "body": [
+<           {
+<             "type": "MethodDefinition",
+<             "key": {
+<               "type": "Identifier",
+<               "name": "Bar"
+<             },
+<             "value": {
+<               "type": "FunctionExpression",
+<               "id": null,
+<               "params": [],
+<               "body": {
+<                 "type": "BlockStatement",
+<                 "body": [
+<                   {
+<                     "type": "ExpressionStatement",
+<                     "expression": {
+<                       "type": "CallExpression",
+<                       "callee": {
+<                         "type": "MemberExpression",
+<                         "object": {
+<                           "type": "Identifier",
+<                           "name": "console"
+<                         },
+<                         "property": {
+<                           "type": "Identifier",
+<                           "name": "log"
+<                         },
+<                         "computed": false
+<                       },
+<                       "arguments": [
+<                         {
+<                           "type": "Literal",
+<                           "value": "hello world",
+<                           "raw": "'hello world'"
+<                         }
+<                       ]
+<                     }
+<                   }
+<                 ]
+<               }
+<             },
+<             "kind": "method",
+<             "static": false
+<           }
+<         ]
+<       }
+<     }
+<   ],
+<   "sourceType": "script"
+< }
+
+
+ 
+ */
