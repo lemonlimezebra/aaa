@@ -104,9 +104,10 @@ public enum IdKind
 
 public class Body
 {
-    public Body(Scope parent, BodyKind bodyKind)
+    public Body(Scope parent, BodyKind bodyKind, ref int _unknownOpenBracesThatNeedMatched)
     {
         Scope = new(parent, this);
+        _unknownOpenBracesThatNeedMatched = 0;
         Type = bodyKind;
     }
 

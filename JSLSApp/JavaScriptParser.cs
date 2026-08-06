@@ -41,6 +41,15 @@ public class JavaScriptParser
 
     public Scope _currentScope = new(parent:null, body:null);
 
+    /// <summary>
+    /// Resets the count when a new known scope is open,
+    /// i.e.: this still doesn't fully solve the problem but it could delay corrupt state
+    /// when the file is 100% correct maybe?
+    /// 
+    /// As well, having to remember to reset this when you open a scope is very unfortunate...
+    /// </summary>
+    private int _unknownOpenBracesThatNeedMatched;
+
     public JavaScriptParser(JavaScriptDocument doc)
     {
         _doc = doc;
@@ -140,10 +149,17 @@ public class JavaScriptParser
                     }
                     break;
                 case SyntaxKind.CloseBraceToken:
-                    if (_currentScope.AttemptEndScope(token.Position, token.SyntaxKind) && _currentScope.Parent is not null)
+                    if (_unknownOpenBracesThatNeedMatched > 0)
+                    {
+                        _unknownOpenBracesThatNeedMatched--;
+                    }
+                    else if (_currentScope.AttemptEndScope(token.Position, token.SyntaxKind) && _currentScope.Parent is not null)
                     {
                         _currentScope = _currentScope.Parent;
                     }
+                    break;
+                case SyntaxKind.OpenBraceToken:
+                    _unknownOpenBracesThatNeedMatched++;
                     break;
                 case SyntaxKind.WhitespaceToken:
                     break;
@@ -231,7 +247,7 @@ public class JavaScriptParser
         //    return;
         //var closeBraceToken = token;
 
-        functionDeclarationNode.Body = new Body(_currentScope, BodyKind.FunctionBody);
+        functionDeclarationNode.Body = new Body(_currentScope, BodyKind.FunctionBody, ref _unknownOpenBracesThatNeedMatched);
         functionDeclarationNode.Body.SetStart(openBraceToken.Position);
         //functionDeclarationNode.Body.SetEnd(closeBraceToken.Position);
 
@@ -274,7 +290,7 @@ public class JavaScriptParser
         //    return;
         //var closeBraceToken = token;
 
-        classDeclarationNode.Body = new Body(_currentScope, BodyKind.ClassBody);
+        classDeclarationNode.Body = new Body(_currentScope, BodyKind.ClassBody, ref _unknownOpenBracesThatNeedMatched);
         classDeclarationNode.Body.SetStart(openBraceToken.Position);
         //classDeclarationNode.Body.SetEnd(closeBraceToken.Position);
 
