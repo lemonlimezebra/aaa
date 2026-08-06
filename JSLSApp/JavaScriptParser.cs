@@ -156,7 +156,9 @@ public class JavaScriptParser
 
     public void ParseFunctionDefinitionNode(StringBuilder stringBuilder, SyntaxToken identifierToken, bool identifierTokenExists)
     {
-        //var f
+        // TODO: if (!identifierTokenExists) then you have a 'function' keyword defined function...
+        // ...otherwise you have a function defined within a class that doesn't have the 'function' keyword...
+        // ...TODO: Why is the function defined within a class logic 1 character off (the ' - 1' whereas the 'function' keyword defined function doesn't need this?
 
         if (!identifierTokenExists)
         {
@@ -166,13 +168,27 @@ public class JavaScriptParser
             _ = ConsumePeekToken();
         }
 
-        // TODO: Constructing a string here is likely to be extremely GC expensive
-        // TODO: Presuming that the entry was added then just taking the most recent function definition perhaps is a bit hacky; I'm not sure
-        stringBuilder.Clear();
-        for (int k = 0; k < identifierToken.Length; k++)
+        if (!identifierTokenExists)
         {
-            stringBuilder.Append(_doc.Chars[(_pos - identifierToken.Length) + k]);
+            // TODO: Constructing a string here is likely to be extremely GC expensive
+            // TODO: Presuming that the entry was added then just taking the most recent function definition perhaps is a bit hacky; I'm not sure
+            stringBuilder.Clear();
+            for (int k = 0; k < identifierToken.Length; k++)
+            {
+                stringBuilder.Append(_doc.Chars[(_pos - identifierToken.Length) + k]);
+            }
         }
+        else
+        {
+            // TODO: Constructing a string here is likely to be extremely GC expensive
+            // TODO: Presuming that the entry was added then just taking the most recent function definition perhaps is a bit hacky; I'm not sure
+            stringBuilder.Clear();
+            for (int k = 0; k < identifierToken.Length; k++)
+            {
+                stringBuilder.Append(_doc.Chars[(_pos - identifierToken.Length - 1) + k]);
+            }
+        }
+        
         var str = stringBuilder.ToString();
 
         if (!identifierTokenExists)

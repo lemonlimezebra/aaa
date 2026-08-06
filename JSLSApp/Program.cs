@@ -9,17 +9,13 @@ using System.Text.Json;
 using Range = JSLSApp.LspTypes.Range;
 
 
-//var str = @"
-//
-//function Apple() {
-//}
-//
-//public class Foo {
-//    Bar() {
-//    }
-//}
-//";
-var str = File.ReadAllText("C:\\Users\\hunte\\Repos\\New folder (4)\\arbezemilnomel\\src\\RendererFiles\\dialogImplementationsGlobal.js");
+var str = @"
+public class Foo {
+    Bar() {
+    }
+}
+";
+//var str = File.ReadAllText("C:\\Users\\hunte\\Repos\\New folder (4)\\arbezemilnomel\\src\\RendererFiles\\dialogImplementationsGlobal.js");
 var javaScriptDocument = new JavaScriptDocument(str.ToList());
 var javaScriptParser = new JavaScriptParser(javaScriptDocument);
 javaScriptDocument.CompilationUnit = javaScriptParser.Parse();
