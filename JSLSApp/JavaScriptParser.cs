@@ -58,9 +58,10 @@ public class JavaScriptParser
         return _peekToken;
     }
 
-    public void ConsumePeekToken()
+    public SyntaxToken ConsumePeekToken()
     {
         _peekTokenExists = false;
+        return _peekToken;
     }
 
     public SyntaxToken NextToken()
@@ -82,8 +83,7 @@ public class JavaScriptParser
             SyntaxToken token;
             if (_peekTokenExists)
             {
-                token = _peekToken;
-                ConsumePeekToken();
+                token = ConsumePeekToken();
             }
             else
             {
