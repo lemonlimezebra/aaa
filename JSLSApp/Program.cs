@@ -608,9 +608,9 @@ SyntaxNode? RecursiveSearch(List<SyntaxNode> bodyList, int indexLine, ref int to
         {
             return null;
         }
-        if (child_node.End.line > indexLine)
+        if (child_node.Body is not null && child_node.Body.End.line > indexLine)
         {
-            if (child_node.Body is not null && child_node.Body.BodyList.Count > 0)
+            if (child_node.Body.BodyList.Count > 0)
             {
                 var node = RecursiveSearch(child_node.Body.BodyList, indexLine, ref totalChecks);
                 if (node is not null)
