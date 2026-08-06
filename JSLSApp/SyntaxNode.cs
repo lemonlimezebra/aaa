@@ -106,6 +106,15 @@ public class Body
 {
     public BodyKind Type { get; set; }
     public List<SyntaxNode> BodyList { get; set; }
+    public Scope Scope { get; set; }
+}
+
+public class Scope
+{
+    /// <summary>
+    /// Is strictly text comparison within a single scope
+    /// </summary>
+    public Dictionary<string, SyntaxNode> LexicalScope { get; set; }
 }
 
 public enum BodyKind

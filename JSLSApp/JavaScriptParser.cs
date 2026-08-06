@@ -42,9 +42,15 @@ public class JavaScriptParser
     private SyntaxToken _peekToken;
     private bool _peekTokenExists;
 
+    public List<Scope> _scope = new();
+
+    public Scope _currentScope = new();
+    public int _currentScope_Index = 0;
+
     public JavaScriptParser(JavaScriptDocument doc)
     {
         _doc = doc;
+        _scope.Add(_currentScope);
     }
 
     private enum Context
@@ -160,6 +166,8 @@ public class JavaScriptParser
         _functionDefinitionStartPositionList[^1].Name = str;
         var functionDeclarationNode = new FunctionDeclarationNode(str, token.Position.line, token.Position.character, _indexLine, _indexChar);
         _bodyList.Add(functionDeclarationNode);
+
+        _currentScope.LexicalScope.Add(functionDeclarationNode.Id_name, functionDeclarationNode);
     }
 
     public void ParseClassDefinitionNode(StringBuilder stringBuilder)
@@ -179,6 +187,8 @@ public class JavaScriptParser
         }
         var classDeclarationNode = new ClassDeclarationNode(stringBuilder.ToString(), token.Position.line, token.Position.character, _indexLine, _indexChar);
         _bodyList.Add(classDeclarationNode);
+
+        _currentScope.LexicalScope.Add(classDeclarationNode.Id_name, classDeclarationNode);
     }
 
     public SyntaxToken Lex()
