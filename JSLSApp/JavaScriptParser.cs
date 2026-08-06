@@ -1,6 +1,4 @@
 ﻿using JSLSApp.LspTypes;
-using System.Collections;
-using System.Runtime.InteropServices;
 using System.Text;
 
 namespace JSLSApp;
@@ -19,7 +17,6 @@ public class JavaScriptParser
     private int _pos = 0;
     private int _indexLine = 0;
     private int _indexChar = 0;
-    private bool IsEof => _pos >= _doc.Chars.Count;
 
     public List<int> PsuedoFourFieldTrackedSyntaxList { get => _psuedoFourFieldTrackedSyntaxList; set => _psuedoFourFieldTrackedSyntaxList = value; }
 
@@ -42,21 +39,11 @@ public class JavaScriptParser
     private SyntaxToken _peekToken;
     private bool _peekTokenExists;
 
-    public List<Scope> _scopeList = new();
-
-    public Scope _currentScope = new(0);
+    public Scope _currentScope = new(parent:null, body:null);
 
     public JavaScriptParser(JavaScriptDocument doc)
     {
         _doc = doc;
-        _scopeList.Add(_currentScope);
-    }
-
-    private enum Context
-    {
-        None,
-        ExpectFunctionDefinition,
-        ExpectClassDefinition,
     }
 
     public SyntaxToken PeekToken()
@@ -103,8 +90,6 @@ public class JavaScriptParser
         var stringBuilder = new StringBuilder(capacity: 64);
 
         _doc.HasBeenParsedAtLeastOnce = true;
-
-        var context = Context.None;
 
         while (_pos < _doc.Chars.Count)
         {
@@ -210,7 +195,7 @@ public class JavaScriptParser
             return;
         var closeBraceToken = token;
 
-        functionDeclarationNode.Body = new Body(_scopeList.Count);
+        functionDeclarationNode.Body = new Body(_currentScope);
         functionDeclarationNode.Body.SetStart(openBraceToken.Position);
         functionDeclarationNode.Body.SetEnd(closeBraceToken.Position);
     }
@@ -251,7 +236,7 @@ public class JavaScriptParser
             return;
         var closeBraceToken = token;
 
-        classDeclarationNode.Body = new Body(_scopeList.Count);
+        classDeclarationNode.Body = new Body(_currentScope);
         classDeclarationNode.Body.SetStart(openBraceToken.Position);
         classDeclarationNode.Body.SetEnd(closeBraceToken.Position);
     }

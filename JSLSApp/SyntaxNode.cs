@@ -104,15 +104,15 @@ public enum IdKind
 
 public class Body
 {
-    public Body(int scopeIndex)
+    public Body(Scope parent)
     {
-        Scope = new(scopeIndex);
+        Scope = new(parent, this);
     }
 
     public BodyKind Type { get; set; }
     public List<SyntaxNode> BodyList { get; } = new();
     public Scope Scope { get; set; }
-    public Position Start { get; set; }
+    public Position Start { get; private set; }
     public Position End { get; private set; }
     public bool IsStarted { get; set; }
     public bool IsEnded { get; set; }
@@ -132,17 +132,35 @@ public class Body
 
 public class Scope
 {
-    public Scope(int scopeIndex)
+    public Scope(Scope? parent, Body? body)
     {
-        ScopeIndex = scopeIndex;
+        Parent = parent;
+        Body = body;
     }
 
-    public int ScopeIndex { get; }
+    public Scope? Parent { get; set; }
+
+    public Body? Body { get; set; }
 
     /// <summary>
     /// Is strictly text comparison within a single scope
     /// </summary>
     public Dictionary<string, SyntaxNode> LexicalScope { get; } = new();
+
+
+    public bool AttemptEndScope(Position position)
+    {
+        if (Body is null)
+            return false;
+
+        if (!Body.IsEnded)
+        {
+            Body.SetEnd(position);
+            return true;
+        }
+
+        return false;
+    }
 }
 
 public enum BodyKind
