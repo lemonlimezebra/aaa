@@ -53,6 +53,10 @@ public class JavaScriptParser
 
     public SyntaxToken PeekToken()
     {
+        if (_peekTokenExists)
+        {
+            return _peekToken;
+        }
         _peekToken = Lex();
         _peekTokenExists = true;
         return _peekToken;
@@ -94,6 +98,7 @@ public class JavaScriptParser
                 case SyntaxKind.EndOfFileToken:
                     goto exitOuterWhileLoop;
                 case SyntaxKind.FunctionKeywordToken:
+                    ParseFunctionDefinitionNode();
                     context = Context.ExpectFunctionDefinition;
                     break;
                 case SyntaxKind.ClassKeywordToken:
@@ -175,6 +180,11 @@ public class JavaScriptParser
 
         exitOuterWhileLoop:
         return new JavaScriptCompilationUnit(_functionDefinitionStartPositionList, _bodyList);
+    }
+
+    public void ParseFunctionDefinitionNode()
+    {
+        //var token = PeekToken();
     }
 
     public SyntaxToken Lex()
