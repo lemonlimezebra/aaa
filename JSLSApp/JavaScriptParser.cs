@@ -44,8 +44,7 @@ public class JavaScriptParser
 
     public List<Scope> _scope = new();
 
-    public Scope _currentScope = new();
-    public int _currentScope_Index = 0;
+    public Scope _currentScope = new(0);
 
     public JavaScriptParser(JavaScriptDocument doc)
     {

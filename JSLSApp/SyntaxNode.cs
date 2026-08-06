@@ -111,10 +111,17 @@ public class Body
 
 public class Scope
 {
+    public Scope(int scopeIndex)
+    {
+        ScopeIndex = scopeIndex;
+    }
+
+    public int ScopeIndex { get; }
+
     /// <summary>
     /// Is strictly text comparison within a single scope
     /// </summary>
-    public Dictionary<string, SyntaxNode> LexicalScope { get; set; }
+    public Dictionary<string, SyntaxNode> LexicalScope { get; } = new();
 }
 
 public enum BodyKind
