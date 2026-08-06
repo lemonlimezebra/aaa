@@ -531,7 +531,9 @@ object? DeserializeContent(string content)
 
                 SyntaxNode? result_node = null;
 
-                result_node = RecursiveSearch(bbbjavaScriptDocument.CompilationUnit.BodyList, hoverRequest.@params.position.line);
+                var totalChecks = 0;
+
+                result_node = RecursiveSearch(bbbjavaScriptDocument.CompilationUnit.BodyList, hoverRequest.@params.position.line, ref totalChecks);
 
                 string nodeString;
                 if (result_node is not null)
@@ -593,21 +595,30 @@ object? DeserializeContent(string content)
 }
 
 /// TODO: tree based skipping over children if parent end doesn't reach
-SyntaxNode? RecursiveSearch(List<SyntaxNode> bodyList, int indexLine)
+SyntaxNode? RecursiveSearch(List<SyntaxNode> bodyList, int indexLine, ref int totalChecks)
 {
     foreach (var child_node in bodyList)
     {
+        totalChecks++;
         if (child_node.Start.line == indexLine)
         {
             return child_node;
         }
-        if (child_node.Body is not null && child_node.Body.BodyList.Count > 0)
+        if (totalChecks > 10)
         {
-            var node = RecursiveSearch(child_node.Body.BodyList, indexLine);
-            if (node is not null)
+            return null;
+        }
+        if (child_node.End.line > indexLine)
+        {
+            if (child_node.Body is not null && child_node.Body.BodyList.Count > 0)
             {
-                return node;
+                var node = RecursiveSearch(child_node.Body.BodyList, indexLine, ref totalChecks);
+                if (node is not null)
+                {
+                    return node;
+                }
             }
+            break;
         }
     }
     return null;
