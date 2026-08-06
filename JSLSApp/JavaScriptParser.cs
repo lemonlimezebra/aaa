@@ -159,6 +159,7 @@ public class JavaScriptParser
         // TODO: if (!identifierTokenExists) then you have a 'function' keyword defined function...
         // ...otherwise you have a function defined within a class that doesn't have the 'function' keyword...
         // ...TODO: Why is the function defined within a class logic 1 character off (the ' - 1' whereas the 'function' keyword defined function doesn't need this?
+        // TODO: You probably lex'd the braces and parentheses wrong.
 
         if (!identifierTokenExists)
         {

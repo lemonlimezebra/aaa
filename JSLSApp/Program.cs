@@ -600,7 +600,9 @@ SyntaxNode? RecursiveSearch(List<SyntaxNode> bodyList, int indexLine, ref int to
         {
             return child_node;
         }
-        if (totalChecks > 10)
+        // super arbitrary 1,000 limit until I sleep on the logic.
+        // it should do a tree walking -ish algorithm so 1k isn't too bad?
+        if (totalChecks > 1000)
         {
             return null;
         }
