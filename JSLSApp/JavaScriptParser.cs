@@ -140,7 +140,10 @@ public class JavaScriptParser
                     }
                     break;
                 case SyntaxKind.CloseBraceToken:
-                    _currentScope.AttemptEndScope(token.Position, token.SyntaxKind);
+                    if (_currentScope.AttemptEndScope(token.Position, token.SyntaxKind) && _currentScope.Parent is not null)
+                    {
+                        _currentScope = _currentScope.Parent;
+                    }
                     break;
                 case SyntaxKind.WhitespaceToken:
                     break;
@@ -173,7 +176,7 @@ public class JavaScriptParser
         var str = stringBuilder.ToString();
         _functionDefinitionStartPositionList[^1].Name = str;
         var functionDeclarationNode = new FunctionDeclarationNode(str, identifierToken.Position.line, identifierToken.Position.character, _indexLine, _indexChar);
-        _bodyList.Add(functionDeclarationNode);
+        _currentScope.GetBodyList(_bodyList).Add(functionDeclarationNode);
 
         _currentScope.LexicalScope.Add(functionDeclarationNode.Id_name, functionDeclarationNode);
 
@@ -229,7 +232,7 @@ public class JavaScriptParser
             stringBuilder.Append(_doc.Chars[(_pos - token.Length) + k]);
         }
         var classDeclarationNode = new ClassDeclarationNode(stringBuilder.ToString(), token.Position.line, token.Position.character, _indexLine, _indexChar);
-        _bodyList.Add(classDeclarationNode);
+        _currentScope.GetBodyList(_bodyList).Add(classDeclarationNode);
 
         _currentScope.LexicalScope.Add(classDeclarationNode.Id_name, classDeclarationNode);
 

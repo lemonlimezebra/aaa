@@ -158,6 +158,16 @@ public class Scope
         return Body.Type;
     }
 
+    public List<SyntaxNode> GetBodyList(List<SyntaxNode> globalBodyList)
+    {
+        if (Body is null)
+        {
+            return globalBodyList;
+        }
+
+        return Body.BodyList;
+    }
+
     public bool AttemptEndScope(Position position, SyntaxKind syntaxKind)
     {
         if (Body is null)
