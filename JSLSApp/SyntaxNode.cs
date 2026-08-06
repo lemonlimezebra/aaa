@@ -104,9 +104,30 @@ public enum IdKind
 
 public class Body
 {
+    public Body(int scopeIndex)
+    {
+        Scope = new(scopeIndex);
+    }
+
     public BodyKind Type { get; set; }
-    public List<SyntaxNode> BodyList { get; set; }
+    public List<SyntaxNode> BodyList { get; } = new();
     public Scope Scope { get; set; }
+    public Position Start { get; set; }
+    public Position End { get; private set; }
+    public bool IsStarted { get; set; }
+    public bool IsEnded { get; set; }
+
+    public void SetStart(Position start)
+    {
+        Start = start;
+        IsStarted = true;
+    }
+    
+    public void SetEnd(Position end)
+    {
+        End = end;
+        IsEnded = true;
+    }
 }
 
 public class Scope

@@ -15,4 +15,8 @@ public enum SyntaxKind
     ClassDeclarationNode,
     //GlobalNode,
     FunctionDeclarationNode,
+    OpenParenthesisToken,
+    CloseParenthesisToken,
+    OpenBraceToken,
+    CloseBraceToken,
 }

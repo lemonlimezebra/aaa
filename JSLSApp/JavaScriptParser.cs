@@ -42,14 +42,14 @@ public class JavaScriptParser
     private SyntaxToken _peekToken;
     private bool _peekTokenExists;
 
-    public List<Scope> _scope = new();
+    public List<Scope> _scopeList = new();
 
     public Scope _currentScope = new(0);
 
     public JavaScriptParser(JavaScriptDocument doc)
     {
         _doc = doc;
-        _scope.Add(_currentScope);
+        _scopeList.Add(_currentScope);
     }
 
     private enum Context
@@ -81,6 +81,18 @@ public class JavaScriptParser
         _peekTokenExists = false;
         // Using _peekToken for temporary storage, the boolean '_peekTokenExists' is still false.
         while ((_peekToken = Lex()).SyntaxKind == SyntaxKind.WhitespaceToken);
+        return _peekToken;
+    }
+
+    public SyntaxToken Defensive_SkipUntil_LexFor_OrEof(SyntaxKind syntaxKind)
+    {
+        _peekTokenExists = false;
+        // Using _peekToken for temporary storage, the boolean '_peekTokenExists' is still false.
+        while ((_peekToken = Lex()).SyntaxKind != syntaxKind)
+        {
+            if (_peekToken.SyntaxKind == SyntaxKind.EndOfFileToken)
+                break;
+        }
         return _peekToken;
     }
 
@@ -151,7 +163,6 @@ public class JavaScriptParser
         var token = PeekToken();
         if (token.SyntaxKind != SyntaxKind.IdentifierToken)
             return;
-
         _ = ConsumePeekToken();
 
         // TODO: Constructing a string here is likely to be extremely GC expensive
@@ -167,14 +178,47 @@ public class JavaScriptParser
         _bodyList.Add(functionDeclarationNode);
 
         _currentScope.LexicalScope.Add(functionDeclarationNode.Id_name, functionDeclarationNode);
+
+        ParseFunctionArguments();
+        ParseFunctionBody(functionDeclarationNode);
     }
+
+    public void ParseFunctionArguments()
+    {
+        var token = PeekToken();
+        if (token.SyntaxKind != SyntaxKind.OpenParenthesisToken)
+            return;
+        _ = ConsumePeekToken();
+        // ----
+        token = Defensive_SkipUntil_LexFor_OrEof(SyntaxKind.CloseParenthesisToken);
+        if (token.SyntaxKind != SyntaxKind.CloseParenthesisToken)
+            return;
+    }
+
+    public void ParseFunctionBody(FunctionDeclarationNode functionDeclarationNode)
+    {
+        var token = PeekToken();
+        if (token.SyntaxKind != SyntaxKind.OpenBraceToken)
+            return;
+        _ = ConsumePeekToken();
+        var openBraceToken = token;
+        // ----
+        token = Defensive_SkipUntil_LexFor_OrEof(SyntaxKind.CloseBraceToken);
+        if (token.SyntaxKind != SyntaxKind.CloseParenthesisToken)
+            return;
+        var closeBraceToken = token;
+
+        functionDeclarationNode.Body = new Body(_scopeList.Count);
+        functionDeclarationNode.Body.SetStart(openBraceToken.Position);
+        functionDeclarationNode.Body.SetEnd(closeBraceToken.Position);
+    }
+
 
     public void ParseClassDefinitionNode(StringBuilder stringBuilder)
     {
         var token = PeekToken();
         if (token.SyntaxKind != SyntaxKind.IdentifierToken)
             return;
-
         _ = ConsumePeekToken();
 
         // TODO: Constructing a string here is likely to be extremely GC expensive
@@ -188,6 +232,26 @@ public class JavaScriptParser
         _bodyList.Add(classDeclarationNode);
 
         _currentScope.LexicalScope.Add(classDeclarationNode.Id_name, classDeclarationNode);
+
+        ParseClassBody(classDeclarationNode);
+    }
+
+    public void ParseClassBody(ClassDeclarationNode classDeclarationNode)
+    {
+        var token = PeekToken();
+        if (token.SyntaxKind != SyntaxKind.OpenBraceToken)
+            return;
+        _ = ConsumePeekToken();
+        var openBraceToken = token;
+        // ----
+        token = Defensive_SkipUntil_LexFor_OrEof(SyntaxKind.CloseBraceToken);
+        if (token.SyntaxKind != SyntaxKind.CloseParenthesisToken)
+            return;
+        var closeBraceToken = token;
+
+        classDeclarationNode.Body = new Body(_scopeList.Count);
+        classDeclarationNode.Body.SetStart(openBraceToken.Position);
+        classDeclarationNode.Body.SetEnd(closeBraceToken.Position);
     }
 
     public SyntaxToken Lex()
