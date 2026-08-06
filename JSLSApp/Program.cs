@@ -15,6 +15,8 @@ function Apple() {
 }
 
 public class Foo {
+    Bar() {
+    }
 }
 ";
 //var str = File.ReadAllText("C:\\Users\\hunte\\Repos\\New folder (4)\\arbezemilnomel\\src\\main.cjs");

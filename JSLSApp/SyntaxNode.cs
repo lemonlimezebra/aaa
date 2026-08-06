@@ -148,6 +148,15 @@ public class Scope
     /// </summary>
     public Dictionary<string, SyntaxNode> LexicalScope { get; } = new();
 
+    public BodyKind GetBodyKind()
+    {
+        if (Body is null)
+        {
+            return BodyKind.GlobalBody;
+        }
+
+        return Body.Type;
+    }
 
     public bool AttemptEndScope(Position position, SyntaxKind syntaxKind)
     {
@@ -185,6 +194,7 @@ public enum BodyKind
     //GlobalBody,
     ClassBody,
     FunctionBody,
+    GlobalBody,
 }
 
 /// <summary>

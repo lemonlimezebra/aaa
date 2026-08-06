@@ -107,12 +107,17 @@ public class JavaScriptParser
                 case SyntaxKind.EndOfFileToken:
                     goto exitOuterWhileLoop;
                 case SyntaxKind.FunctionKeywordToken:
-                    ParseFunctionDefinitionNode(stringBuilder);
+                    ParseFunctionDefinitionNode(stringBuilder, default, false);
                     break;
                 case SyntaxKind.ClassKeywordToken:
                     ParseClassDefinitionNode(stringBuilder);
                     break;
                 case SyntaxKind.IdentifierToken:
+                    if (_currentScope.GetBodyKind() == BodyKind.ClassBody &&
+                        PeekToken().SyntaxKind == SyntaxKind.OpenParenthesisToken)
+                    {
+                        ParseFunctionDefinitionNode(stringBuilder, token, true);
+                    }
                     break;
                 case SyntaxKind.StringToken:
                     if (_seenLineEnd_flagForStringsAndComments)
@@ -146,25 +151,28 @@ public class JavaScriptParser
         return new JavaScriptCompilationUnit(_functionDefinitionStartPositionList, _bodyList);
     }
 
-    public void ParseFunctionDefinitionNode(StringBuilder stringBuilder)
+    public void ParseFunctionDefinitionNode(StringBuilder stringBuilder, SyntaxToken identifierToken, bool identifierTokenExists)
     {
         //var f
 
-        var token = PeekToken();
-        if (token.SyntaxKind != SyntaxKind.IdentifierToken)
-            return;
-        _ = ConsumePeekToken();
+        if (!identifierTokenExists)
+        {
+            identifierToken = PeekToken();
+            if (identifierToken.SyntaxKind != SyntaxKind.IdentifierToken)
+                return;
+            _ = ConsumePeekToken();
+        }
 
         // TODO: Constructing a string here is likely to be extremely GC expensive
         // TODO: Presuming that the entry was added then just taking the most recent function definition perhaps is a bit hacky; I'm not sure
         stringBuilder.Clear();
-        for (int k = 0; k < token.Length; k++)
+        for (int k = 0; k < identifierToken.Length; k++)
         {
-            stringBuilder.Append(_doc.Chars[(_pos - token.Length) + k]);
+            stringBuilder.Append(_doc.Chars[(_pos - identifierToken.Length) + k]);
         }
         var str = stringBuilder.ToString();
         _functionDefinitionStartPositionList[^1].Name = str;
-        var functionDeclarationNode = new FunctionDeclarationNode(str, token.Position.line, token.Position.character, _indexLine, _indexChar);
+        var functionDeclarationNode = new FunctionDeclarationNode(str, identifierToken.Position.line, identifierToken.Position.character, _indexLine, _indexChar);
         _bodyList.Add(functionDeclarationNode);
 
         _currentScope.LexicalScope.Add(functionDeclarationNode.Id_name, functionDeclarationNode);
