@@ -96,6 +96,8 @@ public class JavaScriptParser
         return _peekToken;
     }
 
+    // oh I wanted the class functions that don't have a keyword function to be parsed
+
     public JavaScriptCompilationUnit Parse()
     {
         var stringBuilder = new StringBuilder(capacity: 64);
