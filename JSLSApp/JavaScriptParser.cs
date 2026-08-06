@@ -83,6 +83,7 @@ public class JavaScriptParser
             if (_peekTokenExists)
             {
                 token = _peekToken;
+                ConsumePeekToken();
             }
             else
             {
