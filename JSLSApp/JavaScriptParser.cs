@@ -36,6 +36,9 @@ public class JavaScriptParser
     /// </summary>
     private bool _seenLineEnd_flagForStringsAndComments;
 
+    private SyntaxToken _peekToken;
+    private bool _peekTokenExists;
+
     public JavaScriptParser(JavaScriptDocument doc)
     {
         _doc = doc;
@@ -48,6 +51,24 @@ public class JavaScriptParser
         ExpectClassDefinition,
     }
 
+    public SyntaxToken PeekToken()
+    {
+        _peekToken = Lex();
+        _peekTokenExists = true;
+        return _peekToken;
+    }
+
+    public void ConsumePeekToken()
+    {
+        _peekTokenExists = false;
+    }
+
+    public SyntaxToken NextToken()
+    {
+        _peekTokenExists = false;
+        return Lex();
+    }
+
     public JavaScriptCompilationUnit Parse()
     {
         var stringBuilder = new StringBuilder(capacity: 64);
@@ -58,7 +79,15 @@ public class JavaScriptParser
 
         while (_pos < _doc.Chars.Count)
         {
-            var token = Lex();
+            SyntaxToken token;
+            if (_peekTokenExists)
+            {
+                token = _peekToken;
+            }
+            else
+            {
+                token = NextToken();
+            }
             switch (token.SyntaxKind)
             {
                 case SyntaxKind.EndOfFileToken:
