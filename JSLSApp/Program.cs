@@ -525,6 +525,9 @@ object? DeserializeContent(string content)
                     };
                 }
 
+                // TODO: I think everytime you request it this is re-parsing.
+                // TODO: Remove all the random code that is in this switch case solely cause you copy and pasted some other case and didn't delete the unnecessary parts.
+
                 SyntaxNode? result_node = null;
 
                 var totalChecks = 0;
