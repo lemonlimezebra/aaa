@@ -174,7 +174,12 @@ public class JavaScriptParser
             stringBuilder.Append(_doc.Chars[(_pos - identifierToken.Length) + k]);
         }
         var str = stringBuilder.ToString();
-        _functionDefinitionStartPositionList[^1].Name = str;
+
+        if (!identifierTokenExists)
+        {
+            _functionDefinitionStartPositionList[^1].Name = str;
+        }
+        
         var functionDeclarationNode = new FunctionDeclarationNode(str, identifierToken.Position.line, identifierToken.Position.character, _indexLine, _indexChar);
         _currentScope.GetBodyList(_bodyList).Add(functionDeclarationNode);
 
