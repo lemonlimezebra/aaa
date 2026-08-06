@@ -204,7 +204,7 @@ public class JavaScriptParser
         var openBraceToken = token;
         // ----
         token = Defensive_SkipUntil_LexFor_OrEof(SyntaxKind.CloseBraceToken);
-        if (token.SyntaxKind != SyntaxKind.CloseParenthesisToken)
+        if (token.SyntaxKind != SyntaxKind.CloseBraceToken)
             return;
         var closeBraceToken = token;
 
@@ -349,6 +349,34 @@ public class JavaScriptParser
                     return Lex_String('\'');
                 case '`':
                     return Lex_String('`');
+                case '(':
+                    {
+                        _pos++;
+                        var startPosition = new Position(_indexLine, _indexChar);
+                        _indexChar++;
+                        return new SyntaxToken(SyntaxKind.OpenParenthesisToken, startPosition, 1);
+                    }
+                case ')':
+                    {
+                        _pos++;
+                        var startPosition = new Position(_indexLine, _indexChar);
+                        _indexChar++;
+                        return new SyntaxToken(SyntaxKind.CloseParenthesisToken, startPosition, 1);
+                    }
+                case '{':
+                    {
+                        _pos++;
+                        var startPosition = new Position(_indexLine, _indexChar);
+                        _indexChar++;
+                        return new SyntaxToken(SyntaxKind.OpenBraceToken, startPosition, 1);
+                    }
+                case '}':
+                    {
+                        _pos++;
+                        var startPosition = new Position(_indexLine, _indexChar);
+                        _indexChar++;
+                        return new SyntaxToken(SyntaxKind.CloseBraceToken, startPosition, 1);
+                    }
                 default:
                     break;
             }
