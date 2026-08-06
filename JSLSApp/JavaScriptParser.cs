@@ -134,6 +134,9 @@ public class JavaScriptParser
                         _psuedoFourFieldTrackedSyntaxList.Add(token.Length);
                     }
                     break;
+                case SyntaxKind.CloseBraceToken:
+                    _currentScope.AttemptEndScope(token.Position, token.SyntaxKind);
+                    break;
                 case SyntaxKind.WhitespaceToken:
                     break;
             }
@@ -190,14 +193,16 @@ public class JavaScriptParser
         _ = ConsumePeekToken();
         var openBraceToken = token;
         // ----
-        token = Defensive_SkipUntil_LexFor_OrEof(SyntaxKind.CloseBraceToken);
-        if (token.SyntaxKind != SyntaxKind.CloseBraceToken)
-            return;
-        var closeBraceToken = token;
+        //token = Defensive_SkipUntil_LexFor_OrEof(SyntaxKind.CloseBraceToken);
+        //if (token.SyntaxKind != SyntaxKind.CloseBraceToken)
+        //    return;
+        //var closeBraceToken = token;
 
-        functionDeclarationNode.Body = new Body(_currentScope);
+        functionDeclarationNode.Body = new Body(_currentScope, BodyKind.FunctionBody);
         functionDeclarationNode.Body.SetStart(openBraceToken.Position);
-        functionDeclarationNode.Body.SetEnd(closeBraceToken.Position);
+        //functionDeclarationNode.Body.SetEnd(closeBraceToken.Position);
+
+        _currentScope = functionDeclarationNode.Body.Scope;
     }
 
 
@@ -230,15 +235,17 @@ public class JavaScriptParser
             return;
         _ = ConsumePeekToken();
         var openBraceToken = token;
-        // ----
-        token = Defensive_SkipUntil_LexFor_OrEof(SyntaxKind.CloseBraceToken);
-        if (token.SyntaxKind != SyntaxKind.CloseBraceToken)
-            return;
-        var closeBraceToken = token;
+        //// ----
+        //token = Defensive_SkipUntil_LexFor_OrEof(SyntaxKind.CloseBraceToken);
+        //if (token.SyntaxKind != SyntaxKind.CloseBraceToken)
+        //    return;
+        //var closeBraceToken = token;
 
-        classDeclarationNode.Body = new Body(_currentScope);
+        classDeclarationNode.Body = new Body(_currentScope, BodyKind.ClassBody);
         classDeclarationNode.Body.SetStart(openBraceToken.Position);
-        classDeclarationNode.Body.SetEnd(closeBraceToken.Position);
+        //classDeclarationNode.Body.SetEnd(closeBraceToken.Position);
+
+        _currentScope = classDeclarationNode.Body.Scope;
     }
 
     public SyntaxToken Lex()

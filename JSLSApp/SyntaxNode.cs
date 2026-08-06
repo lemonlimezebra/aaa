@@ -104,9 +104,10 @@ public enum IdKind
 
 public class Body
 {
-    public Body(Scope parent)
+    public Body(Scope parent, BodyKind bodyKind)
     {
         Scope = new(parent, this);
+        Type = bodyKind;
     }
 
     public BodyKind Type { get; set; }
@@ -148,15 +149,31 @@ public class Scope
     public Dictionary<string, SyntaxNode> LexicalScope { get; } = new();
 
 
-    public bool AttemptEndScope(Position position)
+    public bool AttemptEndScope(Position position, SyntaxKind syntaxKind)
     {
         if (Body is null)
             return false;
 
         if (!Body.IsEnded)
         {
-            Body.SetEnd(position);
-            return true;
+            switch (Body.Type)
+            {
+                case BodyKind.ClassBody:
+                    if (syntaxKind == SyntaxKind.CloseBraceToken)
+                    {
+                        Body.SetEnd(position);
+                        return true;
+                    }
+                    break;
+                case BodyKind.FunctionBody:
+                    if (syntaxKind == SyntaxKind.CloseBraceToken)
+                    {
+                        Body.SetEnd(position);
+                        return true;
+                    }
+                    break;
+            }
+            
         }
 
         return false;
@@ -167,6 +184,7 @@ public enum BodyKind
 {
     //GlobalBody,
     ClassBody,
+    FunctionBody,
 }
 
 /// <summary>
