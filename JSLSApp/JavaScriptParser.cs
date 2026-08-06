@@ -98,7 +98,10 @@ public class JavaScriptParser
                         {
                             stringBuilder.Append(_doc.Chars[(_pos - token.Length) + k]);
                         }
-                        _functionDefinitionStartPositionList[^1].Name = stringBuilder.ToString();
+                        var str = stringBuilder.ToString();
+                        _functionDefinitionStartPositionList[^1].Name = str;
+                        var functionDeclarationNode = new FunctionDeclarationNode(str, token.Position.line, token.Position.character, _indexLine, _indexChar);
+                        _bodyList.Add(functionDeclarationNode);
                         context = Context.None;
                     }
                     else if (context == Context.ExpectClassDefinition)

@@ -80,6 +80,23 @@ public class ClassDeclarationNode : SyntaxNode
     public override string Id_name { get; }
 }
 
+public class FunctionDeclarationNode : SyntaxNode
+{
+    public FunctionDeclarationNode(string id_name, int startLine, int startCharacter, int endLine, int endCharacter)
+    {
+        Id_name = id_name;
+        Start = new Position(startLine, startCharacter);
+        End = new Position(endLine, endCharacter);
+    }
+
+    public override SyntaxKind SyntaxKind => SyntaxKind.FunctionDeclarationNode;
+
+    public override Position Start { get; set; }
+    public override Position End { get; set; }
+    public override IdKind Id_type => IdKind.Identifier;
+    public override string Id_name { get; }
+}
+
 public enum IdKind
 {
     Identifier,

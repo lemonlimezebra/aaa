@@ -13,5 +13,6 @@ public enum SyntaxKind
     SingleLineCommentToken,
     MultiLineCommentToken,
     ClassDeclarationNode,
-    GlobalNode,
+    //GlobalNode,
+    FunctionDeclarationNode,
 }
