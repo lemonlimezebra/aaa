@@ -106,22 +106,9 @@ public class JavaScriptParser
                     ParseFunctionDefinitionNode(stringBuilder);
                     break;
                 case SyntaxKind.ClassKeywordToken:
-                    context = Context.ExpectClassDefinition;
+                    ParseClassDefinitionNode(stringBuilder);
                     break;
                 case SyntaxKind.IdentifierToken:
-                    if (context == Context.ExpectClassDefinition)
-                    {
-                        // TODO: Constructing a string here is likely to be extremely GC expensive
-                        // TODO: Presuming that the entry was added then just taking the most recent function definition perhaps is a bit hacky; I'm not sure
-                        stringBuilder.Clear();
-                        for (int k = 0; k < token.Length; k++)
-                        {
-                            stringBuilder.Append(_doc.Chars[(_pos - token.Length) + k]);
-                        }
-                        var classDeclarationNode = new ClassDeclarationNode(stringBuilder.ToString(), token.Position.line, token.Position.character, _indexLine, _indexChar);
-                        _bodyList.Add(classDeclarationNode);
-                        context = Context.None;
-                    }
                     break;
                 case SyntaxKind.StringToken:
                     if (_seenLineEnd_flagForStringsAndComments)
@@ -173,6 +160,25 @@ public class JavaScriptParser
         _functionDefinitionStartPositionList[^1].Name = str;
         var functionDeclarationNode = new FunctionDeclarationNode(str, token.Position.line, token.Position.character, _indexLine, _indexChar);
         _bodyList.Add(functionDeclarationNode);
+    }
+
+    public void ParseClassDefinitionNode(StringBuilder stringBuilder)
+    {
+        var token = PeekToken();
+        if (token.SyntaxKind != SyntaxKind.IdentifierToken)
+            return;
+
+        _ = ConsumePeekToken();
+
+        // TODO: Constructing a string here is likely to be extremely GC expensive
+        // TODO: Presuming that the entry was added then just taking the most recent function definition perhaps is a bit hacky; I'm not sure
+        stringBuilder.Clear();
+        for (int k = 0; k < token.Length; k++)
+        {
+            stringBuilder.Append(_doc.Chars[(_pos - token.Length) + k]);
+        }
+        var classDeclarationNode = new ClassDeclarationNode(stringBuilder.ToString(), token.Position.line, token.Position.character, _indexLine, _indexChar);
+        _bodyList.Add(classDeclarationNode);
     }
 
     public SyntaxToken Lex()
