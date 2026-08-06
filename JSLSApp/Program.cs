@@ -24,6 +24,9 @@ javaScriptDocument.CompilationUnit = javaScriptParser.Parse();
 var aaa = javaScriptDocument.CompilationUnit.FunctionDefinitionStartPositionList;
 var bbb = javaScriptDocument.CompilationUnit.GetString();
 
+// omg I was wondering why the body start and end where the start of the identifier but I realize I'm looking at the identifier
+// I need to take a break soon.
+
 /*
 {
  "type": "Program",

@@ -245,7 +245,7 @@ public class JavaScriptParser
         var openBraceToken = token;
         // ----
         token = Defensive_SkipUntil_LexFor_OrEof(SyntaxKind.CloseBraceToken);
-        if (token.SyntaxKind != SyntaxKind.CloseParenthesisToken)
+        if (token.SyntaxKind != SyntaxKind.CloseBraceToken)
             return;
         var closeBraceToken = token;
 
