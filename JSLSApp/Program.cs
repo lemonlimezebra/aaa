@@ -527,6 +527,7 @@ object? DeserializeContent(string content)
 
                 // TODO: I think everytime you request it this is re-parsing.
                 // TODO: Remove all the random code that is in this switch case solely cause you copy and pasted some other case and didn't delete the unnecessary parts.
+                // TODO: That "unknown" node thing for random brace encountering so you don't close an understood scope due to an if statement within it.
 
                 SyntaxNode? result_node = null;
 
