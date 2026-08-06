@@ -10,6 +10,10 @@ using Range = JSLSApp.LspTypes.Range;
 
 
 var str = @"
+
+function Apple() {
+}
+
 public class Foo {
 }
 ";

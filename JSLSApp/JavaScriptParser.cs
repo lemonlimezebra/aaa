@@ -36,6 +36,9 @@ public class JavaScriptParser
     /// </summary>
     private bool _seenLineEnd_flagForStringsAndComments;
 
+    /// <summary>
+    /// _peekToken is also used for temporary storage, when the boolean '_peekTokenExists' is false.
+    /// </summary>
     private SyntaxToken _peekToken;
     private bool _peekTokenExists;
 
@@ -57,7 +60,7 @@ public class JavaScriptParser
         {
             return _peekToken;
         }
-        _peekToken = Lex();
+        while ((_peekToken = Lex()).SyntaxKind == SyntaxKind.WhitespaceToken);
         _peekTokenExists = true;
         return _peekToken;
     }
@@ -71,7 +74,9 @@ public class JavaScriptParser
     public SyntaxToken NextToken()
     {
         _peekTokenExists = false;
-        return Lex();
+        // Using _peekToken for temporary storage, the boolean '_peekTokenExists' is still false.
+        while ((_peekToken = Lex()).SyntaxKind == SyntaxKind.WhitespaceToken);
+        return _peekToken;
     }
 
     public JavaScriptCompilationUnit Parse()
@@ -98,48 +103,13 @@ public class JavaScriptParser
                 case SyntaxKind.EndOfFileToken:
                     goto exitOuterWhileLoop;
                 case SyntaxKind.FunctionKeywordToken:
-                    ParseFunctionDefinitionNode();
-                    context = Context.ExpectFunctionDefinition;
+                    ParseFunctionDefinitionNode(stringBuilder);
                     break;
                 case SyntaxKind.ClassKeywordToken:
-                    /*
-                     < If you were parsing this file using your iterative development strategy on Day 1, your AST might look like a heavily simplified, fallback version of this tree.
-< {
-<   "type": "ClassDeclaration",
-<   "id": { "type": "Identifier", "name": "Foo" },
-<   "body": {
-<     "type": "ClassBody",
-<     "body": [
-<       {
-<         "type": "UnregisteredNode",
-<         "tokens": ['Bar', '(', ')', '{', 'console', '.', 'log', ...],
-<         "start": { "line": 2, "column": 1 },
-<         "end": { "line": 4, "column": 2 }
-<       }
-<     ]
-<   }
-< }
-                     
-                     */
                     context = Context.ExpectClassDefinition;
                     break;
                 case SyntaxKind.IdentifierToken:
-                    if (context == Context.ExpectFunctionDefinition)
-                    {
-                        // TODO: Constructing a string here is likely to be extremely GC expensive
-                        // TODO: Presuming that the entry was added then just taking the most recent function definition perhaps is a bit hacky; I'm not sure
-                        stringBuilder.Clear();
-                        for (int k = 0; k < token.Length; k++)
-                        {
-                            stringBuilder.Append(_doc.Chars[(_pos - token.Length) + k]);
-                        }
-                        var str = stringBuilder.ToString();
-                        _functionDefinitionStartPositionList[^1].Name = str;
-                        var functionDeclarationNode = new FunctionDeclarationNode(str, token.Position.line, token.Position.character, _indexLine, _indexChar);
-                        _bodyList.Add(functionDeclarationNode);
-                        context = Context.None;
-                    }
-                    else if (context == Context.ExpectClassDefinition)
+                    if (context == Context.ExpectClassDefinition)
                     {
                         // TODO: Constructing a string here is likely to be extremely GC expensive
                         // TODO: Presuming that the entry was added then just taking the most recent function definition perhaps is a bit hacky; I'm not sure
@@ -182,9 +152,27 @@ public class JavaScriptParser
         return new JavaScriptCompilationUnit(_functionDefinitionStartPositionList, _bodyList);
     }
 
-    public void ParseFunctionDefinitionNode()
+    public void ParseFunctionDefinitionNode(StringBuilder stringBuilder)
     {
-        //var token = PeekToken();
+        //var f
+
+        var token = PeekToken();
+        if (token.SyntaxKind != SyntaxKind.IdentifierToken)
+            return;
+
+        _ = ConsumePeekToken();
+
+        // TODO: Constructing a string here is likely to be extremely GC expensive
+        // TODO: Presuming that the entry was added then just taking the most recent function definition perhaps is a bit hacky; I'm not sure
+        stringBuilder.Clear();
+        for (int k = 0; k < token.Length; k++)
+        {
+            stringBuilder.Append(_doc.Chars[(_pos - token.Length) + k]);
+        }
+        var str = stringBuilder.ToString();
+        _functionDefinitionStartPositionList[^1].Name = str;
+        var functionDeclarationNode = new FunctionDeclarationNode(str, token.Position.line, token.Position.character, _indexLine, _indexChar);
+        _bodyList.Add(functionDeclarationNode);
     }
 
     public SyntaxToken Lex()
@@ -465,7 +453,7 @@ public class JavaScriptParser
             _pos++;
         }
 
-        return new SyntaxToken(SyntaxKind.NumberToken, startPosition, length);
+        return new SyntaxToken(SyntaxKind.WhitespaceToken, startPosition, length);
     }
 
     public SyntaxToken Lex_String(char terminator)
