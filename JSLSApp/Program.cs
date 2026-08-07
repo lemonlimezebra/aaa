@@ -550,6 +550,77 @@ object? DeserializeContent(string content)
             }
 
             return request;
+        case "textDocument/completion":
+            var completionRequest = JsonSerializer.Deserialize<TextDocumentCompletionRequest>(content);
+            File.AppendAllText(myPath, $"\n====RECEIVED COMPLETION {completionRequest.@params.textDocument.uri}====\n");
+            File.AppendAllText(myPath, $"\n====TEEEEEEEEEEEST====\n");
+
+            if (_javaScriptWorkspace?.OpenedSourceFileAbsolutePathToInMemoryContentMap.TryGetValue(completionRequest.@params.textDocument.uri, out var cccjavaScriptDocument) ?? false)
+            {
+                File.AppendAllText(myPath, $"\n====v2TEEEEEEEEEEEST====\n");
+
+                var javascriptParser = new JavaScriptParser(cccjavaScriptDocument);
+                cccjavaScriptDocument.CompilationUnit = javascriptParser.Parse();
+                //if (!cccjavaScriptDocument.HasBeenParsedAtLeastOnce)
+                //{
+                //    var javascriptParser = new JavaScriptParser();
+                //    cccjavaScriptDocument.CompilationUnit = javascriptParser.Parse(cccjavaScriptDocument);
+                //}
+                var documentSymbolArray = new DocumentSymbol[cccjavaScriptDocument.CompilationUnit.FunctionDefinitionStartPositionList.Count];
+                File.AppendAllText(myPath, $"\n====documentSymbolList.length:{documentSymbolArray.Length}====\n");
+                for (int i = 0; i < cccjavaScriptDocument.CompilationUnit.FunctionDefinitionStartPositionList.Count; i++)
+                {
+                    var functionDefinition = cccjavaScriptDocument.CompilationUnit.FunctionDefinitionStartPositionList[i];
+                    documentSymbolArray[i] = new DocumentSymbol
+                    {
+                        //name
+                        kind = SymbolKind.Function,
+                        name = functionDefinition.Name,
+                        range = new Range
+                        {
+                            start = functionDefinition.StartPosition,
+                            end = functionDefinition.StartPosition
+                        }
+                    };
+                }
+
+                // TODO: I think everytime you request it this is re-parsing.
+                // TODO: Remove all the random code that is in this switch case solely cause you copy and pasted some other case and didn't delete the unnecessary parts.
+                // TODO: That "unknown" node thing for random brace encountering so you don't close an understood scope due to an if statement within it.
+
+                /*SyntaxNode? result_node = null;
+
+                var totalChecks = 0;
+
+                result_node = RecursiveSearch(cccjavaScriptDocument.CompilationUnit.BodyList, completionRequest.@params.position.line, ref totalChecks);
+
+                string nodeString;
+                if (result_node is not null)
+                {
+                    nodeString = $"{result_node.SyntaxKind}~{result_node.Id_name}";
+                }
+                else
+                {
+                    nodeString = "result_node~was_null";
+                }*/
+
+                var completionItem = new TextDocumentCompletionItem()
+                {
+                    label = $"completion example for {completionRequest.@params.textDocument.uri}"
+                };
+                var completionItemArray = new TextDocumentCompletionItem[1];
+                completionItemArray[0] = completionItem;
+                var textDocumentCompletionResponseResult = new TextDocumentCompletionResponseResult()
+                {
+                    isIncomplete = false,
+                    items = completionItemArray
+                };
+
+                var textDocumentCompletionResponse = new TextDocumentCompletionResponse(completionRequest.id, textDocumentCompletionResponseResult);
+                Console.Out.WriteLine(MAIN_encodeMessageObject(textDocumentCompletionResponse));
+            }
+
+            return request;
         case "textDocument/CustomFullFileLexRequest":
             var customFullFileLexRequest = JsonSerializer.Deserialize<CustomFullFileLexRequest>(content);
             File.AppendAllText(myPath, $"\n====RECEIVED customFullFileLexRequest {customFullFileLexRequest.@params.textDocument.uri}====\n");
