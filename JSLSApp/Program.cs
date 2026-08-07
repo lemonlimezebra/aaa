@@ -606,7 +606,8 @@ object? DeserializeContent(string content)
 
                 var completionItem = new TextDocumentCompletionItem()
                 {
-                    label = $"completion example for {completionRequest.@params.textDocument.uri}"
+                    label = $"completion example for {completionRequest.@params.textDocument.uri}",
+                    kind = (int)CompletionItemKind.Text
                 };
                 var completionItemArray = new TextDocumentCompletionItem[1];
                 completionItemArray[0] = completionItem;
